@@ -31,10 +31,7 @@ export default function Login() {
     try {
       await login({ email, password });
       toast.success('Bienvenido! Iniciando sesion...');
-      
-      setTimeout(() => {
-        navigate('/student/dashboard');
-      }, 500);
+      navigate('/');
     } catch (error) {
       toast.error('Credenciales invalidas. Intenta de nuevo.');
     } finally {
@@ -50,10 +47,7 @@ export default function Login() {
     try {
       await login({ email: demoEmail, password: 'password' });
       toast.success('Bienvenido! Iniciando sesion...');
-      
-      setTimeout(() => {
-        navigate('/student/dashboard');
-      }, 500);
+      navigate('/');
     } catch (error) {
       toast.error('Error en el inicio de sesion');
     } finally {
@@ -160,7 +154,7 @@ export default function Login() {
                 disabled={isLoading}
                 className="w-full px-4 py-2 text-sm font-medium text-green-600 bg-green-50 hover:bg-green-100 rounded-lg transition-colors border border-green-200 disabled:opacity-50"
               >
-                Docente (Carlos Lopez)
+                Docente (Ricardo Arbeláez)
               </button>
               <button
                 type="button"

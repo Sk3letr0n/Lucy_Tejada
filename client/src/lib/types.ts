@@ -92,7 +92,7 @@ export interface Schedule {
   subjectName: string;
   teacherId: string;
   teacherName: string;
-  day: 'Lunes' | 'Martes' | 'Miércoles' | 'Jueves' | 'Viernes';
+  day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday';
   startTime: string;
   endTime: string;
   classroom: string;
@@ -296,6 +296,99 @@ export interface ComponentState {
   isLoading: boolean;
   error: string | null;
   success: boolean;
+}
+
+// ============ MÓDULO DE MÚSICA ============
+
+export type InstrumentFamily =
+  | 'Cuerdas'
+  | 'Vientos Madera'
+  | 'Vientos Metal'
+  | 'Percusión'
+  | 'Teclas'
+  | 'Voz';
+
+export type InstrumentStatus =
+  | 'available'
+  | 'loaned'
+  | 'maintenance'
+  | 'retired';
+
+export interface MusicInstrument {
+  id: string;
+  name: string;
+  serial: string;
+  family: InstrumentFamily;
+  brand?: string;
+  status: InstrumentStatus;
+  acquiredAt: Date;
+  /** Estudiante (Student.id) al que está prestado, si aplica */
+  loanedToStudentId?: string;
+  notes?: string;
+}
+
+export type EnsembleType =
+  | 'Banda Sinfónica'
+  | 'Coro'
+  | 'Orquesta'
+  | 'Cámara'
+  | 'Ensamble Folclórico';
+
+export interface Ensemble {
+  id: string;
+  name: string;
+  type: EnsembleType;
+  /** Teacher.id del director/a */
+  directorId: string;
+  /** Student.id[] de los integrantes */
+  memberIds: string[];
+  rehearsalDay: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday';
+  rehearsalStart: string; // HH:mm
+  rehearsalEnd: string;   // HH:mm
+  rehearsalRoom: string;
+  description?: string;
+}
+
+export type PieceDifficulty = 'Básico' | 'Intermedio' | 'Avanzado';
+
+export interface RepertoirePiece {
+  id: string;
+  title: string;
+  composer: string;
+  durationMin: number;
+  difficulty: PieceDifficulty;
+  /** Ensemble.id que la trabaja actualmente, opcional */
+  ensembleId?: string;
+  /** Subject.id donde se estudia, opcional */
+  subjectId?: string;
+  /** Teacher.id que la asignó */
+  assignedBy?: string;
+  assignedAt?: Date;
+  notes?: string;
+}
+
+export type RecitalStatus = 'scheduled' | 'completed' | 'cancelled';
+
+export interface Recital {
+  id: string;
+  title: string;
+  date: Date;
+  venue: string;
+  /** Ensemble.id que se presenta */
+  ensembleId: string;
+  /** Repertoire piece IDs a interpretar */
+  pieceIds: string[];
+  status: RecitalStatus;
+  description?: string;
+}
+
+export interface MusicModuleStats {
+  totalInstruments: number;
+  instrumentsAvailable: number;
+  instrumentsLoaned: number;
+  totalEnsembles: number;
+  upcomingRecitals: number;
+  repertoireSize: number;
 }
 
 export interface ModalState {

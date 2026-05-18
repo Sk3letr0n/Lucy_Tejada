@@ -11,18 +11,22 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentGrades from "./pages/student/StudentGrades";
 import StudentProgress from "./pages/student/StudentProgress";
 import StudentSchedule from "./pages/student/StudentSchedule";
+import StudentMusic from "./pages/student/StudentMusic";
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import TeacherGrades from "./pages/teacher/TeacherGrades";
 import TeacherAttendance from "./pages/teacher/TeacherAttendance";
 import TeacherAnalytics from "./pages/teacher/TeacherAnalytics";
 import TeacherReports from "./pages/teacher/TeacherReports";
 import TeacherSchedule from "./pages/teacher/TeacherSchedule";
+import TeacherMusic from "./pages/teacher/TeacherMusic";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminStudents from "./pages/admin/AdminStudents";
 import AdminTeachers from "./pages/admin/AdminTeachers";
 import AdminSubjects from "./pages/admin/AdminSubjects";
 import AdminSchedule from "./pages/admin/AdminSchedule";
+import AdminReports from "./pages/admin/AdminReports";
 import AdminAudit from "./pages/admin/AdminAudit";
+import AdminMusic from "./pages/admin/AdminMusic";
 
 
 function Router() {
@@ -34,18 +38,22 @@ function Router() {
       <Route path={"/student/grades"} component={StudentGrades} />
       <Route path={"/student/progress"} component={StudentProgress} />
       <Route path={"/student/schedule"} component={StudentSchedule} />
+      <Route path={"/student/music"} component={StudentMusic} />
       <Route path={"/teacher/dashboard"} component={TeacherDashboard} />
       <Route path={"/teacher/grades"} component={TeacherGrades} />
       <Route path={"/teacher/attendance"} component={TeacherAttendance} />
       <Route path={"/teacher/analytics"} component={TeacherAnalytics} />
       <Route path={"/teacher/reports"} component={TeacherReports} />
       <Route path={"/teacher/schedule"} component={TeacherSchedule} />
+      <Route path={"/teacher/music"} component={TeacherMusic} />
       <Route path={"/admin/dashboard"} component={AdminDashboard} />
       <Route path={"/admin/students"} component={AdminStudents} />
       <Route path={"/admin/teachers"} component={AdminTeachers} />
       <Route path={"/admin/subjects"} component={AdminSubjects} />
       <Route path={"/admin/schedule"} component={AdminSchedule} />
+      <Route path={"/admin/reports"} component={AdminReports} />
       <Route path={"/admin/audit"} component={AdminAudit} />
+      <Route path={"/admin/music"} component={AdminMusic} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

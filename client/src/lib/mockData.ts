@@ -3,7 +3,22 @@
  * Instituto Educativo - Sistema de Gestión
  */
 
-import { User, Student, Teacher, Grade, Schedule, Attendance, Subject, AuditLog, StudentProgress } from './types';
+import {
+  User,
+  Student,
+  Teacher,
+  Grade,
+  Schedule,
+  Attendance,
+  Subject,
+  AuditLog,
+  StudentProgress,
+  MusicInstrument,
+  Ensemble,
+  RepertoirePiece,
+  Recital,
+  MusicModuleStats,
+} from './types';
 
 // ============ USUARIOS MOCK ============
 export const mockUsers: User[] = [
@@ -28,7 +43,7 @@ export const mockUsers: User[] = [
   {
     id: '3',
     email: 'carlos@example.com',
-    name: 'Carlos López',
+    name: 'Ricardo Arbeláez',
     role: 'teacher',
     avatar: '👨‍🏫',
     createdAt: new Date('2023-09-01'),
@@ -37,7 +52,7 @@ export const mockUsers: User[] = [
   {
     id: '4',
     email: 'laura@example.com',
-    name: 'Laura Martínez',
+    name: 'Elena Valencia',
     role: 'teacher',
     avatar: '👩‍🏫',
     createdAt: new Date('2023-09-01'),
@@ -518,7 +533,7 @@ export const mockAuditLogs: AuditLog[] = [
   {
     id: '2',
     userId: '3',
-    userName: 'Carlos López',
+    userName: 'Ricardo Arbeláez',
     action: 'CREATE',
     resource: 'Grade',
     resourceId: '1',
@@ -529,7 +544,7 @@ export const mockAuditLogs: AuditLog[] = [
   {
     id: '3',
     userId: '3',
-    userName: 'Carlos López',
+    userName: 'Ricardo Arbeláez',
     action: 'UPDATE',
     resource: 'Attendance',
     resourceId: '5',
@@ -632,3 +647,273 @@ export const calculateAttendanceRate = (attendance: Attendance[]): number => {
   const present = attendance.filter((att) => att.status === 'present').length;
   return (present / attendance.length) * 100;
 };
+
+// ============================================================
+// MÓDULO DE MÚSICA - DATOS MOCK
+// ============================================================
+
+// ============ INVENTARIO DE INSTRUMENTOS ============
+export const mockInstruments: MusicInstrument[] = [
+  {
+    id: 'INS-001',
+    name: 'Violín 4/4',
+    serial: 'VL-2023-001',
+    family: 'Cuerdas',
+    brand: 'Stentor',
+    status: 'loaned',
+    acquiredAt: new Date('2023-02-10'),
+    loanedToStudentId: '1',
+    notes: 'Entregado con estuche rígido y arco de fibra.',
+  },
+  {
+    id: 'INS-002',
+    name: 'Violín 3/4',
+    serial: 'VL-2023-002',
+    family: 'Cuerdas',
+    brand: 'Cremona',
+    status: 'available',
+    acquiredAt: new Date('2023-02-10'),
+  },
+  {
+    id: 'INS-003',
+    name: 'Clarinete Sib',
+    serial: 'CL-2022-014',
+    family: 'Vientos Madera',
+    brand: 'Yamaha',
+    status: 'available',
+    acquiredAt: new Date('2022-09-05'),
+  },
+  {
+    id: 'INS-004',
+    name: 'Trompeta Sib',
+    serial: 'TR-2022-007',
+    family: 'Vientos Metal',
+    brand: 'Bach',
+    status: 'maintenance',
+    acquiredAt: new Date('2022-04-18'),
+    notes: 'Cambio de pistones programado.',
+  },
+  {
+    id: 'INS-005',
+    name: 'Timbal Sinfónico 26"',
+    serial: 'TI-2021-002',
+    family: 'Percusión',
+    brand: 'Adams',
+    status: 'available',
+    acquiredAt: new Date('2021-08-22'),
+  },
+  {
+    id: 'INS-006',
+    name: 'Piano Acústico Vertical',
+    serial: 'PI-2020-001',
+    family: 'Teclas',
+    brand: 'Kawai',
+    status: 'available',
+    acquiredAt: new Date('2020-11-30'),
+  },
+  {
+    id: 'INS-007',
+    name: 'Violonchelo 4/4',
+    serial: 'VC-2024-003',
+    family: 'Cuerdas',
+    brand: 'Eastman',
+    status: 'loaned',
+    acquiredAt: new Date('2024-01-15'),
+    loanedToStudentId: '2',
+  },
+  {
+    id: 'INS-008',
+    name: 'Flauta Traversa',
+    serial: 'FL-2023-009',
+    family: 'Vientos Madera',
+    brand: 'Pearl',
+    status: 'available',
+    acquiredAt: new Date('2023-06-01'),
+  },
+];
+
+// ============ AGRUPACIONES (ENSEMBLES) ============
+export const mockEnsembles: Ensemble[] = [
+  {
+    id: 'ENS-001',
+    name: 'Banda Sinfónica Lucy Tejada',
+    type: 'Banda Sinfónica',
+    directorId: '1', // Ricardo Arbeláez
+    memberIds: ['1', '2'],
+    rehearsalDay: 'Wednesday',
+    rehearsalStart: '16:00',
+    rehearsalEnd: '18:30',
+    rehearsalRoom: 'Salón de Ensayos Principal',
+    description:
+      'Agrupación insignia del instituto. Repertorio sinfónico y popular.',
+  },
+  {
+    id: 'ENS-002',
+    name: 'Coro Polifónico Juvenil',
+    type: 'Coro',
+    directorId: '2', // Elena Valencia
+    memberIds: ['2'],
+    rehearsalDay: 'Tuesday',
+    rehearsalStart: '17:00',
+    rehearsalEnd: '19:00',
+    rehearsalRoom: 'Auditorio Pedro Nel Gómez',
+    description: 'Coro a cuatro voces mixtas. Repertorio polifónico clásico.',
+  },
+  {
+    id: 'ENS-003',
+    name: 'Ensamble de Cuerdas',
+    type: 'Cámara',
+    directorId: '1',
+    memberIds: ['1'],
+    rehearsalDay: 'Friday',
+    rehearsalStart: '14:00',
+    rehearsalEnd: '15:30',
+    rehearsalRoom: 'Cubículo 04',
+    description: 'Cuarteto de cuerdas para conciertos didácticos.',
+  },
+];
+
+// ============ REPERTORIO MUSICAL ============
+export const mockRepertoire: RepertoirePiece[] = [
+  {
+    id: 'PIE-001',
+    title: 'Concierto de Aranjuez - II. Adagio',
+    composer: 'Joaquín Rodrigo',
+    durationMin: 11,
+    difficulty: 'Avanzado',
+    ensembleId: 'ENS-001',
+    subjectId: '4',
+    assignedBy: '1',
+    assignedAt: new Date('2024-03-01'),
+    notes: 'Solista: trompeta principal.',
+  },
+  {
+    id: 'PIE-002',
+    title: 'Pequeña Serenata Nocturna - I',
+    composer: 'W. A. Mozart',
+    durationMin: 6,
+    difficulty: 'Intermedio',
+    ensembleId: 'ENS-003',
+    subjectId: '1',
+    assignedBy: '1',
+    assignedAt: new Date('2024-02-12'),
+  },
+  {
+    id: 'PIE-003',
+    title: 'Ave Verum Corpus',
+    composer: 'W. A. Mozart',
+    durationMin: 4,
+    difficulty: 'Intermedio',
+    ensembleId: 'ENS-002',
+    subjectId: '5',
+    assignedBy: '2',
+    assignedAt: new Date('2024-02-20'),
+  },
+  {
+    id: 'PIE-004',
+    title: 'Bambuco en Mi Menor',
+    composer: 'Tradicional colombiano',
+    durationMin: 5,
+    difficulty: 'Básico',
+    ensembleId: 'ENS-001',
+    subjectId: '4',
+    assignedBy: '1',
+    assignedAt: new Date('2024-04-05'),
+  },
+  {
+    id: 'PIE-005',
+    title: 'Aleluya (El Mesías)',
+    composer: 'G. F. Händel',
+    durationMin: 4,
+    difficulty: 'Avanzado',
+    ensembleId: 'ENS-002',
+    subjectId: '5',
+    assignedBy: '2',
+    assignedAt: new Date('2024-03-18'),
+  },
+];
+
+// ============ RECITALES / EVENTOS ============
+const inDays = (days: number): Date => {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d;
+};
+
+export const mockRecitals: Recital[] = [
+  {
+    id: 'REC-001',
+    title: 'Concierto de Apertura',
+    date: inDays(14),
+    venue: 'Auditorio Pedro Nel Gómez',
+    ensembleId: 'ENS-001',
+    pieceIds: ['PIE-001', 'PIE-004'],
+    status: 'scheduled',
+    description: 'Apertura del semestre con la Banda Sinfónica.',
+  },
+  {
+    id: 'REC-002',
+    title: 'Recital Coral',
+    date: inDays(28),
+    venue: 'Capilla del Instituto',
+    ensembleId: 'ENS-002',
+    pieceIds: ['PIE-003', 'PIE-005'],
+    status: 'scheduled',
+    description: 'Programa sacro de cámara.',
+  },
+  {
+    id: 'REC-003',
+    title: 'Concierto Didáctico de Cuerdas',
+    date: inDays(-21),
+    venue: 'Sala de Cámara',
+    ensembleId: 'ENS-003',
+    pieceIds: ['PIE-002'],
+    status: 'completed',
+    description: 'Presentación cerrada para familias.',
+  },
+];
+
+// ============ HELPERS DEL MÓDULO DE MÚSICA ============
+export const getInstrumentsByStatus = (
+  status: MusicInstrument['status']
+): MusicInstrument[] => mockInstruments.filter((i) => i.status === status);
+
+export const getInstrumentLoanedToStudent = (
+  studentId: string
+): MusicInstrument[] =>
+  mockInstruments.filter(
+    (i) => i.status === 'loaned' && i.loanedToStudentId === studentId
+  );
+
+export const getEnsemblesByDirector = (teacherId: string): Ensemble[] =>
+  mockEnsembles.filter((e) => e.directorId === teacherId);
+
+export const getEnsemblesForStudent = (studentId: string): Ensemble[] =>
+  mockEnsembles.filter((e) => e.memberIds.includes(studentId));
+
+export const getRepertoireByEnsemble = (
+  ensembleId: string
+): RepertoirePiece[] =>
+  mockRepertoire.filter((p) => p.ensembleId === ensembleId);
+
+export const getRepertoireByTeacher = (teacherId: string): RepertoirePiece[] =>
+  mockRepertoire.filter((p) => p.assignedBy === teacherId);
+
+export const getUpcomingRecitals = (): Recital[] =>
+  mockRecitals
+    .filter((r) => r.status === 'scheduled' && r.date.getTime() >= Date.now())
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+export const getRecitalsForStudent = (studentId: string): Recital[] => {
+  const ensembleIds = getEnsemblesForStudent(studentId).map((e) => e.id);
+  return mockRecitals.filter((r) => ensembleIds.includes(r.ensembleId));
+};
+
+export const getMusicModuleStats = (): MusicModuleStats => ({
+  totalInstruments: mockInstruments.length,
+  instrumentsAvailable: getInstrumentsByStatus('available').length,
+  instrumentsLoaned: getInstrumentsByStatus('loaned').length,
+  totalEnsembles: mockEnsembles.length,
+  upcomingRecitals: getUpcomingRecitals().length,
+  repertoireSize: mockRepertoire.length,
+});

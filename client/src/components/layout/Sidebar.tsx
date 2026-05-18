@@ -21,7 +21,10 @@ import {
   ClipboardList,
   Settings,
   ChevronRight,
+  Music2,
 } from 'lucide-react';
+
+import { ROLE_LABELS, UserRole } from '@/lib/constants';
 
 interface MenuItem {
   label: string;
@@ -48,6 +51,7 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           { label: 'Mis Notas', icon: <BookOpen className="w-5 h-5" />, path: '/student/grades' },
           { label: 'Progreso Academico', icon: <BarChart3 className="w-5 h-5" />, path: '/student/progress' },
           { label: 'Horario', icon: <Clock className="w-5 h-5" />, path: '/student/schedule' },
+          { label: 'Música', icon: <Music2 className="w-5 h-5" />, path: '/student/music' },
         ];
       case 'teacher':
         return [
@@ -57,6 +61,7 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           { label: 'Estadisticas', icon: <BarChart3 className="w-5 h-5" />, path: '/teacher/analytics' },
           { label: 'Reportes', icon: <FileText className="w-5 h-5" />, path: '/teacher/reports' },
           { label: 'Horario', icon: <Clock className="w-5 h-5" />, path: '/teacher/schedule' },
+          { label: 'Música', icon: <Music2 className="w-5 h-5" />, path: '/teacher/music' },
         ];
       case 'admin':
         return [
@@ -65,6 +70,7 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           { label: 'Docentes', icon: <Users className="w-5 h-5" />, path: '/admin/teachers' },
           { label: 'Asignaturas', icon: <BookOpen className="w-5 h-5" />, path: '/admin/subjects' },
           { label: 'Horarios', icon: <Clock className="w-5 h-5" />, path: '/admin/schedule' },
+          { label: 'Música', icon: <Music2 className="w-5 h-5" />, path: '/admin/music' },
           { label: 'Reportes', icon: <FileText className="w-5 h-5" />, path: '/admin/reports' },
           { label: 'Auditoria', icon: <ClipboardList className="w-5 h-5" />, path: '/admin/audit' },
         ];
@@ -154,7 +160,7 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           <div className="mt-8 p-4 bg-sidebar-accent/20 border border-sidebar-accent rounded-lg">
             <p className="text-xs text-sidebar-foreground/80 font-medium mb-2">Rol Actual</p>
             <p className="text-sm font-bold text-sidebar-accent-foreground capitalize">
-              {user?.role === 'estudiante' ? 'Alumno' : user?.role === 'docente' ? 'Docente' : 'Administrador'}
+              {user?.role ? ROLE_LABELS[user.role as UserRole] ?? user.role : 'Invitado'}
             </p>
           </div>
         </div>

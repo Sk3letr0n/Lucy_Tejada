@@ -3,14 +3,20 @@
  * Instituto Educativo - Sistema de Gestión
  */
 
-// Roles de usuario
+// Roles de usuario (claves internas en inglés; etiquetas en español se aplican en UI)
 export const USER_ROLES = {
-  STUDENT: 'estudiante',
-  TEACHER: 'docente',
-  ADMIN: 'administrador',
+  STUDENT: 'student',
+  TEACHER: 'teacher',
+  ADMIN: 'admin',
 } as const;
 
 export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
+
+export const ROLE_LABELS: Record<UserRole, string> = {
+  student: 'Alumno',
+  teacher: 'Docente',
+  admin: 'Administrador',
+};
 
 // Estados de asistencia
 export const ATTENDANCE_STATUS = {
@@ -29,14 +35,24 @@ export const GRADE_SCALE = {
   AVERAGE: 70,
 } as const;
 
-// Días de la semana
+// Días de la semana (claves internas en inglés)
 export const DAYS_OF_WEEK = [
-  'Lunes',
-  'Martes',
-  'Miércoles',
-  'Jueves',
-  'Viernes',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
 ] as const;
+
+export type DayOfWeek = typeof DAYS_OF_WEEK[number];
+
+export const DAY_LABELS: Record<DayOfWeek, string> = {
+  Monday: 'Lunes',
+  Tuesday: 'Martes',
+  Wednesday: 'Miércoles',
+  Thursday: 'Jueves',
+  Friday: 'Viernes',
+};
 
 // Horas de clase
 export const CLASS_HOURS = [
@@ -91,6 +107,7 @@ export const ROUTES = {
   STUDENT_GRADES: '/student/grades',
   STUDENT_PROGRESS: '/student/progress',
   STUDENT_SCHEDULE: '/student/schedule',
+  STUDENT_MUSIC: '/student/music',
   
   // Rutas de docente
   TEACHER_DASHBOARD: '/teacher/dashboard',
@@ -99,6 +116,7 @@ export const ROUTES = {
   TEACHER_REPORTS: '/teacher/reports',
   TEACHER_ANALYTICS: '/teacher/analytics',
   TEACHER_SCHEDULE: '/teacher/schedule',
+  TEACHER_MUSIC: '/teacher/music',
   
   // Rutas de administrativo
   ADMIN_DASHBOARD: '/admin/dashboard',
@@ -108,6 +126,7 @@ export const ROUTES = {
   ADMIN_SUBJECTS: '/admin/subjects',
   ADMIN_AUDIT: '/admin/audit',
   ADMIN_REPORTS: '/admin/reports',
+  ADMIN_MUSIC: '/admin/music',
   
   NOT_FOUND: '/404',
 } as const;
