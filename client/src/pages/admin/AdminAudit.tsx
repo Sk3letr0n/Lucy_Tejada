@@ -8,6 +8,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Card } from '@/components/ui/card';
 import { Filter, Download } from 'lucide-react';
 import { mockAuditLogs } from '@/lib/mockData';
+import { descargarCSV, descargarExcel } from '@/lib/downloads';
 import { toast } from 'sonner';
 
 export default function AdminAudit() {
@@ -41,8 +42,26 @@ export default function AdminAudit() {
     return colors[resource] || 'bg-gray-50';
   };
 
-  const handleExportLogs = () => {
-    toast.success('Descargando logs de auditoria...');
+  const handleExportLogs = (formato: 'csv' | 'excel') => {
+    const rows = filteredLogs.map((a) => ({
+      fecha:    new Date(a.timestamp).toLocaleString('es-CO'),
+      usuario:  a.userName,
+      accion:   a.action,
+      recurso:  a.resource,
+      detalle:  a.resourceId ?? '',
+      ip:       a.ipAddress ?? '',
+    }));
+    const cols = [
+      { encabezado: 'Fecha',    obtener: (r: typeof rows[number]) => r.fecha },
+      { encabezado: 'Usuario',  obtener: (r: typeof rows[number]) => r.usuario },
+      { encabezado: 'Acción',   obtener: (r: typeof rows[number]) => r.accion },
+      { encabezado: 'Recurso',  obtener: (r: typeof rows[number]) => r.recurso },
+      { encabezado: 'Detalle',  obtener: (r: typeof rows[number]) => r.detalle },
+      { encabezado: 'IP',       obtener: (r: typeof rows[number]) => r.ip },
+    ];
+    if (formato === 'csv') descargarCSV(rows, cols, 'auditoria');
+    else descargarExcel(rows, cols, 'auditoria', 'Registro de Auditoría');
+    toast.success(`Log exportado en ${formato.toUpperCase()}`);
   };
 
   return (
@@ -54,13 +73,22 @@ export default function AdminAudit() {
             <h1 className="text-3xl font-bold text-gray-900">Registro de Auditoria</h1>
             <p className="text-gray-600 mt-2">Historial de cambios y accesos al sistema</p>
           </div>
-          <button
-            onClick={handleExportLogs}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            Exportar
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleExportLogs('csv')}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              CSV
+            </button>
+            <button
+              onClick={() => handleExportLogs('excel')}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              Excel
+            </button>
+          </div>
         </div>
 
         {/* Filtros */}

@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController // <-- LE DICE A SPRING: "Esta clase publicará URLs en internet que devuelven JSON"
 @RequestMapping("/api/estudiantes") // <-- La URL base para esta sección será http://localhost:8080/api/estudiantes
-@CrossOrigin(origins = "http://localhost:4200") // <-- Le da permiso exclusivo a tu Front de Angular para conectarse
+// CORS ya está configurado globalmente en SecurityConfig — no hace falta @CrossOrigin aquí
 public class EstudianteController {
 
     @Autowired // <-- "Inyección de dependencias". Trae el Repositorio automáticamente sin hacer un 'new'

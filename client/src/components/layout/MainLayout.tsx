@@ -19,22 +19,23 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navbar */}
+    <div className="h-screen flex flex-col overflow-hidden bg-background">
+      {/* Navbar — ocupa su altura natural, no se mueve */}
       <Navbar
         onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)}
         isMobileMenuOpen={isSidebarOpen}
       />
 
-      <div className="flex">
+      {/* Área bajo el navbar: sidebar siempre visible + contenido con scroll propio */}
+      <div className="flex flex-1 min-h-0">
         {/* Sidebar */}
         <Sidebar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
         />
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-auto">
+        {/* Main Content — solo este panel hace scroll */}
+        <main className="flex-1 overflow-y-auto">
           <div className="p-4 sm:p-6 lg:p-8">
             {children}
           </div>

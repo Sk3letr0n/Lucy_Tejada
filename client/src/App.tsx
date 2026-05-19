@@ -5,8 +5,13 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { NotificationsProvider } from "./contexts/NotificationsContext";
+import { DataProvider } from "./contexts/DataContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentGrades from "./pages/student/StudentGrades";
 import StudentProgress from "./pages/student/StudentProgress";
@@ -34,6 +39,9 @@ function Router() {
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/login"} component={Login} />
+      <Route path={"/register"} component={Register} />
+      <Route path={"/profile"} component={Profile} />
+      <Route path={"/settings"} component={Settings} />
       <Route path={"/student/dashboard"} component={StudentDashboard} />
       <Route path={"/student/grades"} component={StudentGrades} />
       <Route path={"/student/progress"} component={StudentProgress} />
@@ -69,12 +77,16 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light">
+      <ThemeProvider defaultTheme="light" switchable>
         <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
+          <DataProvider>
+            <NotificationsProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Router />
+              </TooltipProvider>
+            </NotificationsProvider>
+          </DataProvider>
         </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>

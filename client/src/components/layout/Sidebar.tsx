@@ -99,7 +99,7 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static left-0 top-0 h-screen w-64 bg-gradient-to-b from-sidebar to-sidebar border-r border-sidebar-border transition-all duration-300 z-40 overflow-y-auto pt-20 lg:pt-0 ${
+        className={`fixed lg:relative inset-y-0 left-0 lg:inset-auto h-screen lg:h-full flex-shrink-0 w-64 bg-gradient-to-b from-sidebar to-sidebar border-r border-sidebar-border transition-transform duration-300 z-40 overflow-y-auto pt-20 lg:pt-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -150,8 +150,15 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
           {/* Footer Menu */}
           <nav className="space-y-2">
-            <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/20 transition-all duration-200">
-              <Settings className="w-5 h-5 text-sidebar-foreground/70" />
+            <button
+              onClick={() => handleNavigate('/settings')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                isActive('/settings')
+                  ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-lg'
+                  : 'text-sidebar-foreground hover:bg-sidebar-accent/20'
+              }`}
+            >
+              <Settings className={`w-5 h-5 ${isActive('/settings') ? 'text-sidebar-accent-foreground' : 'text-sidebar-foreground/70'}`} />
               <span className="flex-1 text-left text-sm font-medium">Configuracion</span>
             </button>
           </nav>

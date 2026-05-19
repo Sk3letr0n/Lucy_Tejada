@@ -74,10 +74,14 @@
   --border: #e5e7eb; /* Gris borde */
   --input: #f3f4f6;
   --ring: #1e40af;
-  --sidebar: #0f172a; /* Azul muy oscuro para sidebar */
-  --sidebar-foreground: #f0f9ff;
-  --sidebar-accent: #10b981;
+  --sidebar: #ffffff;            /* Blanco en modo claro */
+  --sidebar-foreground: #1f2937; /* Texto oscuro */
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #f0f9ff;
+  --sidebar-accent: #2563eb;          /* Azul para items activos */
   --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #e5e7eb;          /* Borde gris claro */
+  --sidebar-ring: #3b82f6;
   --sidebar-border: #1e3a8a;
   --sidebar-ring: #3b82f6;
 }
@@ -154,6 +158,41 @@
     @apply cursor-pointer;
   }
 }
+
+/* ── Global dark-mode overrides for pages that use hardcoded Tailwind gray classes ── */
+.dark .bg-white        { background-color: #1e293b; }
+.dark .bg-gray-50      { background-color: #1e293b; }
+.dark .bg-gray-100     { background-color: #334155; }
+.dark .bg-gray-200     { background-color: #475569; }
+.dark .text-gray-900   { color: #f1f5f9; }
+.dark .text-gray-800   { color: #e2e8f0; }
+.dark .text-gray-700   { color: #cbd5e1; }
+.dark .text-gray-600   { color: #94a3b8; }
+.dark .text-gray-500   { color: #64748b; }
+.dark .border-gray-100 { border-color: #334155; }
+.dark .border-gray-200 { border-color: #334155; }
+.dark .border-gray-300 { border-color: #475569; }
+.dark .divide-gray-200 > * + * { border-color: #334155; }
+/* Inputs y selects nativos */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.dark textarea,
+.dark select {
+  background-color: #1e293b;
+  color: #f1f5f9;
+  border-color: #475569;
+}
+/* Hover states */
+.dark .hover\:bg-gray-100:hover  { background-color: #334155; }
+.dark .hover\:bg-gray-50:hover   { background-color: #334155; }
+/* Badges de rol */
+.dark .bg-blue-100   { background-color: #1e3a5f; }
+.dark .text-blue-800 { color: #93c5fd; }
+.dark .bg-green-100  { background-color: #14532d; }
+.dark .text-green-800{ color: #86efac; }
+.dark .bg-orange-100 { background-color: #7c2d12; }
+.dark .text-orange-800{ color: #fdba74; }
+/* Tablas */
+.dark table thead tr { background-color: #0f172a; }
 
 @layer components {
   /**

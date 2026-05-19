@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, Filter, TrendingUp } from 'lucide-react';
 import { getStudentGrades, mockSubjects } from '@/lib/mockData';
+import { descargarCSV, descargarExcel, descargarPDF } from '@/lib/downloads';
 import { toast } from 'sonner';
 
 export default function StudentGrades() {
@@ -32,12 +33,33 @@ export default function StudentGrades() {
     return weightSum > 0 ? total / weightSum : 0;
   };
 
+  const buildRows = () =>
+    grades.map((g) => ({
+      asignatura: mockSubjects.find((s) => s.id === g.subjectId)?.name ?? g.subjectId,
+      tipo:       g.type,
+      nota:       g.value.toFixed(1),
+      peso:       `${(g.weight * 100).toFixed(0)}%`,
+      fecha:      new Date(g.date).toLocaleDateString('es-CO'),
+      comentarios: g.comments ?? '',
+    }));
+
+  const buildCols = () => [
+    { encabezado: 'Asignatura',   obtener: (r: ReturnType<typeof buildRows>[number]) => r.asignatura },
+    { encabezado: 'Tipo',         obtener: (r: ReturnType<typeof buildRows>[number]) => r.tipo },
+    { encabezado: 'Nota',         obtener: (r: ReturnType<typeof buildRows>[number]) => r.nota },
+    { encabezado: 'Peso',         obtener: (r: ReturnType<typeof buildRows>[number]) => r.peso },
+    { encabezado: 'Fecha',        obtener: (r: ReturnType<typeof buildRows>[number]) => r.fecha },
+    { encabezado: 'Comentarios',  obtener: (r: ReturnType<typeof buildRows>[number]) => r.comentarios },
+  ];
+
   const handleExportPDF = () => {
-    toast.success('Descargando PDF de calificaciones...');
+    descargarPDF(buildRows(), buildCols(), 'mis_calificaciones', 'Mis Calificaciones', 'Reporte personal de notas');
+    toast.success('Reporte HTML descargado — ábrelo en el navegador para imprimir como PDF');
   };
 
   const handleExportExcel = () => {
-    toast.success('Descargando Excel de calificaciones...');
+    descargarExcel(buildRows(), buildCols(), 'mis_calificaciones', 'Mis Calificaciones');
+    toast.success('Archivo Excel descargado');
   };
 
   return (

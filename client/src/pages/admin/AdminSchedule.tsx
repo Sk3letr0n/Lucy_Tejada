@@ -7,12 +7,43 @@ import React, { useState } from 'react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
-import { mockSchedules } from '@/lib/mockData';
+import { mockSchedules, mockSubjects, mockTeachers, mockUsers } from '@/lib/mockData';
+import type { Schedule } from '@/lib/types';
 import { toast } from 'sonner';
 
 export default function AdminSchedule() {
+  const [schedules, setSchedules]   = useState<Schedule[]>(mockSchedules);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [openAdd, setOpenAdd]         = useState(false);
+  const [deleteId, setDeleteId]       = useState<string | null>(null);
+
+  const teacherOptions = mockTeachers.map((t) => ({
+    id: t.id,
+    name: mockUsers.find((u) => u.id === t.userId)?.name ?? `Docente ${t.id}`,
+  }));
+
+  const FORM_INICIAL = {
+    subjectId: mockSubjects[0]?.id ?? '',
+    teacherId: mockTeachers[0]?.id ?? '',
+    day: 'Monday' as Schedule['day'],
+    startTime: '08:00',
+    endTime:   '10:00',
+    classroom: '',
+    capacity:  '30',
+  };
+  const [form, setForm] = useState(FORM_INICIAL);
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const dayLabels: Record<string, string> = {
@@ -23,12 +54,37 @@ export default function AdminSchedule() {
     Friday: 'Viernes',
   };
 
-  const handleAddSchedule = () => {
-    toast.success('Formulario de agregar horario abierto');
+  const handleAddSchedule = () => setOpenAdd(true);
+
+  const handleSubmit = () => {
+    if (!form.classroom) { toast.error('El aula es obligatoria'); return; }
+    const subject = mockSubjects.find((s) => s.id === form.subjectId);
+    const teacher = teacherOptions.find((t) => t.id === form.teacherId);
+    const nuevo: Schedule = {
+      id:          `sched-${Date.now()}`,
+      subjectId:   form.subjectId,
+      subjectName: subject?.name ?? form.subjectId,
+      teacherId:   form.teacherId,
+      teacherName: teacher?.name ?? form.teacherId,
+      day:         form.day,
+      startTime:   form.startTime,
+      endTime:     form.endTime,
+      classroom:   form.classroom,
+      capacity:    Number(form.capacity) || undefined,
+    };
+    setSchedules((p) => [...p, nuevo]);
+    toast.success('Horario agregado');
+    setForm(FORM_INICIAL);
+    setOpenAdd(false);
   };
 
-  const handleDeleteSchedule = (scheduleId: string) => {
-    toast.success('Horario eliminado correctamente');
+  const handleDeleteSchedule = (scheduleId: string) => setDeleteId(scheduleId);
+
+  const handleConfirmDelete = () => {
+    if (!deleteId) return;
+    setSchedules((p) => p.filter((s) => s.id !== deleteId));
+    toast.success('Horario eliminado');
+    setDeleteId(null);
   };
 
   return (
@@ -90,8 +146,8 @@ export default function AdminSchedule() {
             </thead>
             <tbody>
               {(selectedDay
-                ? mockSchedules.filter(s => s.day === selectedDay)
-                : mockSchedules
+                ? schedules.filter(s => s.day === selectedDay)
+                : schedules
               ).map((schedule) => (
                 <tr key={schedule.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-4 font-medium text-gray-900">{schedule.subjectName}</td>
@@ -125,20 +181,20 @@ export default function AdminSchedule() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="p-6 border-0 shadow-md bg-gradient-to-br from-blue-50 to-blue-100">
             <p className="text-sm text-gray-600 font-medium">Total de Horarios</p>
-            <p className="text-3xl font-bold text-blue-600 mt-2">{mockSchedules.length}</p>
+            <p className="text-3xl font-bold text-blue-600 mt-2">{schedules.length}</p>
           </Card>
 
           <Card className="p-6 border-0 shadow-md bg-gradient-to-br from-green-50 to-green-100">
             <p className="text-sm text-gray-600 font-medium">Aulas en Uso</p>
             <p className="text-3xl font-bold text-green-600 mt-2">
-              {new Set(mockSchedules.map(s => s.classroom)).size}
+              {new Set(schedules.map(s => s.classroom)).size}
             </p>
           </Card>
 
           <Card className="p-6 border-0 shadow-md bg-gradient-to-br from-orange-50 to-orange-100">
             <p className="text-sm text-gray-600 font-medium">Horas Totales</p>
             <p className="text-3xl font-bold text-orange-600 mt-2">
-              {mockSchedules.reduce((sum, s) => {
+              {schedules.reduce((sum, s) => {
                 const start = parseInt(s.startTime.split(':')[0]);
                 const end = parseInt(s.endTime.split(':')[0]);
                 return sum + (end - start);
@@ -149,11 +205,102 @@ export default function AdminSchedule() {
           <Card className="p-6 border-0 shadow-md bg-gradient-to-br from-purple-50 to-purple-100">
             <p className="text-sm text-gray-600 font-medium">Docentes</p>
             <p className="text-3xl font-bold text-purple-600 mt-2">
-              {new Set(mockSchedules.map(s => s.teacherId)).size}
+              {new Set(schedules.map(s => s.teacherId)).size}
             </p>
           </Card>
         </div>
       </div>
+
+      {/* Dialog: agregar horario */}
+      <Dialog open={openAdd} onOpenChange={setOpenAdd}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Agregar Horario</DialogTitle>
+            <DialogDescription>Completa los datos para crear un nuevo horario.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>Asignatura</Label>
+              <select
+                value={form.subjectId}
+                onChange={(e) => setForm({ ...form, subjectId: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              >
+                {mockSubjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <Label>Docente</Label>
+              <select
+                value={form.teacherId}
+                onChange={(e) => setForm({ ...form, teacherId: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              >
+                {teacherOptions.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label>Día</Label>
+                <select
+                  value={form.day}
+                  onChange={(e) => setForm({ ...form, day: e.target.value as Schedule['day'] })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                >
+                  {Object.entries(dayLabels).map(([val, lbl]) => (
+                    <option key={val} value={val}>{lbl}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Label>Aula</Label>
+                <Input
+                  value={form.classroom}
+                  onChange={(e) => setForm({ ...form, classroom: e.target.value })}
+                  placeholder="Ej: Sala 101"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <Label>Hora inicio</Label>
+                <Input type="time" value={form.startTime}
+                  onChange={(e) => setForm({ ...form, startTime: e.target.value })} />
+              </div>
+              <div>
+                <Label>Hora fin</Label>
+                <Input type="time" value={form.endTime}
+                  onChange={(e) => setForm({ ...form, endTime: e.target.value })} />
+              </div>
+              <div>
+                <Label>Capacidad</Label>
+                <Input type="number" min={1} value={form.capacity}
+                  onChange={(e) => setForm({ ...form, capacity: e.target.value })} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenAdd(false)}>Cancelar</Button>
+            <Button onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700">Guardar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* AlertDialog: confirmar eliminar */}
+      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar horario?</AlertDialogTitle>
+            <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-red-600 hover:bg-red-700">
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </ProtectedRoute>
   );
 }

@@ -7,6 +7,13 @@ import React, { useMemo, useState } from 'react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter,
+} from '@/components/ui/dialog';
 import {
   Music2,
   Users,
@@ -23,7 +30,9 @@ import {
   mockRecitals,
   mockTeachers,
   mockUsers,
+  mockRepertoire,
 } from '@/lib/mockData';
+import type { RepertoirePiece, Recital, PieceDifficulty, RecitalStatus } from '@/lib/types';
 import { DAY_LABELS, DayOfWeek } from '@/lib/constants';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -38,7 +47,7 @@ export default function TeacherMusic() {
   const teacherRepertoire = getRepertoireByTeacher(teacherId);
 
   const ensembleIds = useMemo(() => new Set(ensembles.map((e) => e.id)), [ensembles]);
-  const recitals = useMemo(
+  const baseRecitals = useMemo(
     () => mockRecitals.filter((r) => ensembleIds.has(r.ensembleId)),
     [ensembleIds]
   );
@@ -47,10 +56,69 @@ export default function TeacherMusic() {
     ensembles[0]?.id ?? null
   );
 
-  const handleAssignPiece = () =>
-    toast.success('Apertura del formulario para asignar nueva obra...');
-  const handleScheduleRecital = () =>
-    toast.success('Apertura del formulario de programación de recital...');
+  // Local state para piezas y recitales (inicializados desde mocks)
+  const [extraPieces,   setExtraPieces]   = useState<RepertoirePiece[]>([]);
+  const [extraRecitals, setExtraRecitals] = useState<Recital[]>([]);
+  const allRecitals = useMemo(
+    () => [...baseRecitals, ...extraRecitals],
+    [baseRecitals, extraRecitals],
+  );
+
+  const [openPiece,   setOpenPiece]   = useState(false);
+  const [openRecital, setOpenRecital] = useState(false);
+
+  const DIFICULTADES: PieceDifficulty[] = ['Básico', 'Intermedio', 'Avanzado'];
+  const [pieceForm, setPieceForm] = useState({
+    title: '', composer: '', durationMin: '10',
+    difficulty: 'Intermedio' as PieceDifficulty,
+    ensembleId: ensembles[0]?.id ?? '',
+    notes: '',
+  });
+  const [recitalForm, setRecitalForm] = useState({
+    title: '', date: new Date().toISOString().slice(0, 10),
+    venue: '', ensembleId: ensembles[0]?.id ?? '',
+    status: 'scheduled' as RecitalStatus, description: '',
+  });
+
+  let nextId = 90000;
+  const genId = () => `tm${nextId++}`;
+
+  const handleSavePiece = () => {
+    if (!pieceForm.title || !pieceForm.composer) {
+      toast.error('Título y compositor son obligatorios'); return;
+    }
+    const nueva: RepertoirePiece = {
+      id: genId(), title: pieceForm.title, composer: pieceForm.composer,
+      durationMin: Number(pieceForm.durationMin) || 0, difficulty: pieceForm.difficulty,
+      ensembleId: pieceForm.ensembleId || undefined,
+      notes: pieceForm.notes || undefined,
+    };
+    setExtraPieces((p) => [...p, nueva]);
+    toast.success('Obra asignada al repertorio');
+    setPieceForm({ title: '', composer: '', durationMin: '10', difficulty: 'Intermedio',
+                   ensembleId: ensembles[0]?.id ?? '', notes: '' });
+    setOpenPiece(false);
+  };
+
+  const handleSaveRecital = () => {
+    if (!recitalForm.title || !recitalForm.ensembleId) {
+      toast.error('Título y agrupación son obligatorios'); return;
+    }
+    const nuevo: Recital = {
+      id: genId(), title: recitalForm.title, date: new Date(recitalForm.date),
+      venue: recitalForm.venue, ensembleId: recitalForm.ensembleId, pieceIds: [],
+      status: recitalForm.status, description: recitalForm.description || undefined,
+    };
+    setExtraRecitals((p) => [...p, nuevo]);
+    toast.success('Recital programado');
+    setRecitalForm({ title: '', date: new Date().toISOString().slice(0, 10),
+                     venue: '', ensembleId: ensembles[0]?.id ?? '',
+                     status: 'scheduled', description: '' });
+    setOpenRecital(false);
+  };
+
+  const handleAssignPiece    = () => setOpenPiece(true);
+  const handleScheduleRecital = () => setOpenRecital(true);
 
   return (
     <ProtectedRoute requiredRole="teacher">
@@ -98,7 +166,7 @@ export default function TeacherMusic() {
           <Card className="p-6 border-0 shadow-md bg-gradient-to-br from-orange-50 to-orange-100">
             <p className="text-sm text-gray-600 font-medium">Recitales en agenda</p>
             <p className="text-3xl font-bold text-orange-700 mt-2">
-              {recitals.length}
+              {allRecitals.length}
             </p>
           </Card>
         </div>
@@ -220,11 +288,12 @@ export default function TeacherMusic() {
             <CalendarDays className="w-5 h-5 text-orange-600" /> Recitales de mis
             agrupaciones
           </h2>
-          {recitals.length === 0 ? (
+          {allRecitals.length === 0 ? (
             <p className="text-gray-600">No hay recitales programados.</p>
           ) : (
             <div className="space-y-3">
-              {recitals
+              {allRecitals
+                .slice()
                 .sort((a, b) => a.date.getTime() - b.date.getTime())
                 .map((recital) => {
                   const ensemble = ensembles.find(
@@ -280,6 +349,98 @@ export default function TeacherMusic() {
           )}
         </Card>
       </div>
+
+      {/* Dialog: asignar obra */}
+      <Dialog open={openPiece} onOpenChange={setOpenPiece}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Asignar Obra al Repertorio</DialogTitle>
+            <DialogDescription>Agrega una nueva pieza musical al repertorio de tus agrupaciones.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div><Label>Título</Label><Input value={pieceForm.title}
+              onChange={(e) => setPieceForm({ ...pieceForm, title: e.target.value })} /></div>
+            <div className="grid grid-cols-2 gap-2">
+              <div><Label>Compositor</Label><Input value={pieceForm.composer}
+                onChange={(e) => setPieceForm({ ...pieceForm, composer: e.target.value })} /></div>
+              <div><Label>Duración (min)</Label><Input type="number" min={1} value={pieceForm.durationMin}
+                onChange={(e) => setPieceForm({ ...pieceForm, durationMin: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label>Dificultad</Label>
+                <select value={pieceForm.difficulty}
+                  onChange={(e) => setPieceForm({ ...pieceForm, difficulty: e.target.value as PieceDifficulty })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                  {DIFICULTADES.map((d) => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label>Agrupación</Label>
+                <select value={pieceForm.ensembleId}
+                  onChange={(e) => setPieceForm({ ...pieceForm, ensembleId: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                  <option value="">Sin asignar</option>
+                  {ensembles.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
+                </select>
+              </div>
+            </div>
+            <div><Label>Notas</Label><Textarea value={pieceForm.notes} rows={2}
+              onChange={(e) => setPieceForm({ ...pieceForm, notes: e.target.value })} /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenPiece(false)}>Cancelar</Button>
+            <Button onClick={handleSavePiece} className="bg-purple-600 hover:bg-purple-700">Guardar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: programar recital */}
+      <Dialog open={openRecital} onOpenChange={setOpenRecital}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Programar Recital</DialogTitle>
+            <DialogDescription>Registra un nuevo recital para tus agrupaciones.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div><Label>Título</Label><Input value={recitalForm.title}
+              onChange={(e) => setRecitalForm({ ...recitalForm, title: e.target.value })} /></div>
+            <div className="grid grid-cols-2 gap-2">
+              <div><Label>Fecha</Label><Input type="date" value={recitalForm.date}
+                onChange={(e) => setRecitalForm({ ...recitalForm, date: e.target.value })} /></div>
+              <div><Label>Lugar</Label><Input value={recitalForm.venue}
+                onChange={(e) => setRecitalForm({ ...recitalForm, venue: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label>Agrupación</Label>
+                <select value={recitalForm.ensembleId}
+                  onChange={(e) => setRecitalForm({ ...recitalForm, ensembleId: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                  <option value="">Selecciona...</option>
+                  {ensembles.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label>Estado</Label>
+                <select value={recitalForm.status}
+                  onChange={(e) => setRecitalForm({ ...recitalForm, status: e.target.value as RecitalStatus })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                  <option value="scheduled">Programado</option>
+                  <option value="completed">Realizado</option>
+                  <option value="cancelled">Cancelado</option>
+                </select>
+              </div>
+            </div>
+            <div><Label>Descripción</Label><Textarea value={recitalForm.description} rows={2}
+              onChange={(e) => setRecitalForm({ ...recitalForm, description: e.target.value })} /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenRecital(false)}>Cancelar</Button>
+            <Button onClick={handleSaveRecital} className="bg-orange-600 hover:bg-orange-700">Guardar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </ProtectedRoute>
   );
 }
