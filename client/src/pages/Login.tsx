@@ -56,11 +56,11 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-green-50 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 py-12">
       {/* Elementos decorativos de fondo */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-green-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-100 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-green-100 dark:bg-green-900 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
       </div>
 
       <div className="relative z-10 w-full max-w-md">
@@ -71,22 +71,22 @@ export default function Login() {
               <BookOpen className="w-8 h-8 text-white" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Lucy Tejada</h1>
-          <p className="text-gray-600 text-sm">Sistema de Gestion Academica</p>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Lucy Tejada</h1>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">Sistema de Gestion Academica</p>
         </div>
 
         {/* Card Principal */}
-        <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+        <Card className="shadow-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 backdrop-blur-sm">
           <div className="p-8">
             {/* Titulo del formulario */}
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">Bienvenido</h2>
-            <p className="text-gray-600 text-sm mb-6">Inicia sesion con tu cuenta</p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Bienvenido</h2>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">Inicia sesion con tu cuenta</p>
 
             {/* Formulario */}
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Correo Electronico
                 </label>
                 <Input
@@ -95,13 +95,13 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
               </div>
 
               {/* Contrasena */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Contrasena
                 </label>
                 <Input
@@ -110,7 +110,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
               </div>
 
@@ -133,9 +133,9 @@ export default function Login() {
 
             {/* Divider */}
             <div className="my-6 flex items-center gap-3">
-              <div className="flex-1 h-px bg-gray-200"></div>
-              <span className="text-xs text-gray-500 font-medium">O prueba con</span>
-              <div className="flex-1 h-px bg-gray-200"></div>
+              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600"></div>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">O prueba con</span>
+              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600"></div>
             </div>
 
             {/* Demo Accounts */}
@@ -144,7 +144,7 @@ export default function Login() {
                 type="button"
                 onClick={() => handleDemoLogin('juan@example.com')}
                 disabled={isLoading}
-                className="w-full px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 disabled:opacity-50"
+                className="w-full px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg transition-colors border border-blue-200 dark:border-blue-700 disabled:opacity-50"
               >
                 Alumno (Juan Perez)
               </button>
@@ -152,7 +152,7 @@ export default function Login() {
                 type="button"
                 onClick={() => handleDemoLogin('carlos@example.com')}
                 disabled={isLoading}
-                className="w-full px-4 py-2 text-sm font-medium text-green-600 bg-green-50 hover:bg-green-100 rounded-lg transition-colors border border-green-200 disabled:opacity-50"
+                className="w-full px-4 py-2 text-sm font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-lg transition-colors border border-green-200 dark:border-green-700 disabled:opacity-50"
               >
                 Docente (Ricardo Arbeláez)
               </button>
@@ -160,26 +160,26 @@ export default function Login() {
                 type="button"
                 onClick={() => handleDemoLogin('admin@example.com')}
                 disabled={isLoading}
-                className="w-full px-4 py-2 text-sm font-medium text-orange-600 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors border border-orange-200 disabled:opacity-50"
+                className="w-full px-4 py-2 text-sm font-medium text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50 rounded-lg transition-colors border border-orange-200 dark:border-orange-700 disabled:opacity-50"
               >
                 Admin (Administrador)
               </button>
             </div>
 
             {/* Info Box */}
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex gap-3">
-              <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg flex gap-3">
+              <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs text-blue-800 font-medium">Credenciales de prueba</p>
-                <p className="text-xs text-blue-700 mt-1">Usa cualquiera de los botones de demostracion para probar el sistema.</p>
+                <p className="text-xs text-blue-800 dark:text-blue-300 font-medium">Credenciales de prueba</p>
+                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">Usa cualquiera de los botones de demostracion para probar el sistema.</p>
               </div>
             </div>
           </div>
         </Card>
 
         {/* Footer */}
-        <p className="text-center text-xs text-gray-600 mt-6">
-          2024 Instituto Educativo. Todos los derechos reservados.
+        <p className="text-center text-xs text-gray-600 dark:text-gray-500 mt-6">
+          2026 Instituto Educativo. Todos los derechos reservados.
         </p>
       </div>
     </div>
